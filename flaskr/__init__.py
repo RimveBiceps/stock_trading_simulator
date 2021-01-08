@@ -29,6 +29,10 @@ def create_app(test_config=None):
 	from . import auth
 	app.register_blueprint(auth.bp)
 
+	from . import news
+	app.register_blueprint(news.bp)
+	app.add_url_rule('/', endpoint='index')
+
 	@app.route('/test')
 	def hey():
 		return("tesxt")
