@@ -2,6 +2,9 @@ import os
 
 from flask import Flask
 
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'csv'}
+
 
 def create_app(test_config=None):
     # create and configure app
@@ -9,6 +12,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        UPLOAD_FOLDER=UPLOAD_FOLDER,
     )
 
     if test_config is None:
@@ -36,6 +40,9 @@ def create_app(test_config=None):
 
     from . import chart
     app.register_blueprint(chart.bp)
+
+    from . import upload
+    app.register_blueprint(upload.bp)
 
     @app.route('/test')
     def hey():

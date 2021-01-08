@@ -84,11 +84,6 @@ def logout():
     return redirect(url_for('index'))
 
 
-@bp.route('/my_profile')
-def my_profile():
-    return render_template('auth/my_profile.html')
-
-
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -98,3 +93,11 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+
+@bp.route('/my_profile')
+@login_required
+def my_profile():
+    return render_template('auth/my_profile.html')
+
+
