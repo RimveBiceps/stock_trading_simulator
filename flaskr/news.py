@@ -3,23 +3,24 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from . import auth
+from . import db
 
 bp = Blueprint('news', __name__)
 
+
 @bp.route('/')
 def index():
-    db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
+    database = db.get_db()
+    posts = database.execute(
+        'SELECT p.id, title, body, author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
     ).fetchall()
     return render_template('news/index.html', posts=posts)
 
+
 @bp.route('/create', methods=('GET', 'POST'))
-@login_required
+@auth.login_required
 def create():
     if request.method == 'POST':
         title = request.form['title']
@@ -32,20 +33,21 @@ def create():
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
+            database = db.get_db()
+            database.execute(
                 'INSERT INTO post (title, body, author_id)'
                 ' VALUES (?, ?, ?)',
                 (title, body, g.user['id'])
             )
-            db.commit()
+            database.commit()
             return redirect(url_for('news.index'))
 
     return render_template('news/create.html')
 
+
 def get_post(id, check_author=True):
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
+    post = db.get_db().execute(
+        'SELECT p.id, title, body, p.create_date, author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = ?',
         (id,)
@@ -59,8 +61,9 @@ def get_post(id, check_author=True):
 
     return post
 
+
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
-@login_required
+@auth.login_required
 def update(id):
     post = get_post(id)
 
@@ -75,22 +78,23 @@ def update(id):
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
+            database = db.get_db()
+            database.execute(
                 'UPDATE post SET title = ?, body = ?'
                 ' WHERE id = ?',
                 (title, body, id)
             )
-            db.commit()
+            database.commit()
             return redirect(url_for('news.index'))
 
     return render_template('news/update.html', post=post)
 
+
 @bp.route('/<int:id>/delete', methods=('POST',))
-@login_required
+@auth.login_required
 def delete(id):
     get_post(id)
-    db = get_db()
-    db.execute('DELETE FROM post WHERE id = ?', (id,))
-    db.commit()
+    database = db.get_db()
+    database.execute('DELETE FROM post WHERE id = ?', (id,))
+    database.commit()
     return redirect(url_for('news.index'))

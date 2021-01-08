@@ -1,35 +1,26 @@
-<title>{% block title %}{% endblock %} - Flaskr</title>
+<title>{% block title %}{% endblock %} - Web Application</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>Flaskr</h1>
-  <ul>
-    {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>
+    <h1><a href="{{ url_for('index') }}">Web Application</a></h1>
+    <ul>
+        {% if g.user %}
+        <li><span><a href="{{ url_for('auth.my_profile') }}">My Profile</a></span>
+        <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+            {% else %}
+        <li><a href="{{ url_for('auth.register') }}">Register</a>
+        <li><a href="{{ url_for('auth.login') }}">Log In</a>
+            {% endif %}
+    </ul>
 </nav>
 <section class="content">
-
-    {% block charts %}
-      <header>
-        <h1>Available Charts</h1>
-      </header>
-        <ol>
-          <li><a href="{{ url_for('chart.line') }}">Line Chart</a>
-          <li><a href="{{ url_for('chart.bar') }}">Bar Chart</a>
-          <li><a href="{{ url_for('chart.pie') }}">Pie Chart</a>
-      </ol>
-    {% endblock %}
-
-  <header>
-    {% block header %}{% endblock %}
-  </header>
-  {% for message in get_flashed_messages() %}
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+    {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
+    {% endfor %}
+    {% if g.user %}
+    {% block charts %}{% endblock %}
+    {% endif %}
+    {% block content %}{% endblock %}
 </section>
