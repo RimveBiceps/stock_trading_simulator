@@ -33,6 +33,10 @@ def create_app(test_config=None):
 	app.register_blueprint(news.bp)
 	app.add_url_rule('/', endpoint='index')
 
+
+	from . import chart
+	app.register_blueprint(chart.bp)
+
 	@app.route('/test')
 	def hey():
 		return("tesxt")
