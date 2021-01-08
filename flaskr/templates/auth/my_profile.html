@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}My Profile{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {{ g.user['username'] }}
+{% endblock %}
